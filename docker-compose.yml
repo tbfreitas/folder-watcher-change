@@ -2,22 +2,13 @@ version: "3.5"
 
 services:
   moquitto:
-    image: "eclipse-mosquitto"
+    image: "eclipse-mosquitto:2.0.11"
     ports:
       - 1883:1883
       - 8883:8883
     volumes:
-      - mosquitto-data:/mosquitto/data
-      - mosquitto-logs:/mosquitto/logs
-      - mosquitto-conf:/mosquitto/config
+      - ./config:/mosquitto/config
     restart: unless-stopped
-    environment:
-      - PUID= 1883
-      - PGID= 1883
 
 volumes:
-  store:
   config:
-  mosquitto-data:
-  mosquitto-logs:
-  mosquitto-conf:
