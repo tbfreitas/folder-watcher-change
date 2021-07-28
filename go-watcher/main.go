@@ -2,13 +2,16 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"log"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/fsnotify/fsnotify"
 )
 
 const (
-	url = "/Users/tarcisio/Desktop/teste.txt"
+	url           = "/Users/tarcisio/Desktop/teste.txt" // mapear volume pra arquivo local pra teste
+	topic         = "topic/secret"
+	addressBroker = "tcp://localhost:1883"
 )
 
 var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
@@ -25,7 +28,7 @@ var connectionLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, 
 
 func main() {
 
-	var broker = "tcp://localhost:1883"
+	var broker = addressBroker
 	options := mqtt.NewClientOptions()
 	options.AddBroker(broker)
 	options.SetClientID("go_mqtt_example")
@@ -39,83 +42,45 @@ func main() {
 		panic(token.Error())
 	}
 
-	topic := "topic/secret"
-	token = client.Subscribe(topic, 1, nil)
-	token.Wait()
-	fmt.Printf("Subscribed to topic %s\n", topic)
+	client.Publish("topic/secret", 0, false, "NOIX IMRÃO")
 
-	num := 10
-	for i := 0; i < num; i++ {
-		text := fmt.Sprintf("%d", i)
-		token = client.Publish(topic, 0, false, text)
-		token.Wait()
-		time.Sleep(time.Second)
+	watcher, err := fsnotify.NewWatcher()
+
+	if err != nil {
+		panic(err)
 	}
 
-	client.Disconnect(100)
-	// watcher, err := fsnotify.NewWatcher()
-	// p, errCon := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "localhost"})
+	defer watcher.Close()
+	done := make(chan bool)
 
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// if errCon != nil {
-	// 	log.Fatal(err)
-	// }
+	// anonymous function
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				log.Println("event:", event)
 
-	// defer watcher.Close()
-	// defer p.Close()
+				fmt.Printf("OK")
+				// str := fmt.Sprint(event.Op)
 
-	// done := make(chan bool)
+				log.Println("modified file:", event.Name)
 
-	// // anonymous function
-	// go func() {
-	// 	for {
-	// 		select {
-	// 		case event, ok := <-watcher.Events:
-	// 			if !ok {
-	// 				return
-	// 			}
-	// 			log.Println("event:", event)
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Println("error:", err)
+			}
+		}
+	}()
 
-	// 			fmt.Printf("OK")
-
-	// 			go func() {
-	// 				for e := range p.Events() {
-	// 					switch ev := e.(type) {
-	// 					case *kafka.Message:
-	// 						if ev.TopicPartition.Error != nil {
-	// 							fmt.Printf("Delivery failed: %v\n", ev.TopicPartition)
-	// 						} else {
-	// 							fmt.Printf("Delivered message to %v\n", ev.TopicPartition)
-	// 						}
-	// 					}
-	// 				}
-	// 			}()
-
-	// 			topic := "t1"
-	// 			str := fmt.Sprint(event.Op)
-	// 			for _, word := range []string{event.Name, str} {
-	// 				p.Produce(&kafka.Message{
-	// 					TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-	// 					Value:          []byte(word),
-	// 				}, nil)
-	// 			}
-	// 			log.Println("modified file:", event.Name)
-
-	// 		case err, ok := <-watcher.Errors:
-	// 			if !ok {
-	// 				return
-	// 			}
-	// 			log.Println("error:", err)
-	// 		}
-	// 	}
-	// }()
-
-	// err = watcher.Add(url)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// <-done
+	err = watcher.Add(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	<-done
 
 }

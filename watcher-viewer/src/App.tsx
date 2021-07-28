@@ -1,23 +1,17 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-const Kafka = require("kafka-node");
+import mqtt from "mqtt";
 
 function App() {
-  var Consumer = Kafka.Consumer;
-  var Client = Kafka.KafkaClient;
-  var client = new Client({ kafkaHost: "localhost:9092" });
-  // var topics = [{ topic: "t1", partition: 0 }];
-  // var options = {
-  //   autoCommit: false,
-  //   fetchMaxWaitMs: 1000,
-  //   fetchMaxBytes: 1024 * 1024,
-  // };
+  React.useEffect(() => {
+    const client = mqtt.connect("ws://localhost:8883");
+    client.subscribe("topic/secret");
 
-  // var consumer = new Consumer(client, topics, options);
-  // consumer.on("message", function (message: string) {
-  //   console.log(message);
-  // });
+    client.on("message", (topic, payload, packet) => {
+      console.log(payload.toString());
+    });
+  }, []);
 
   return (
     <div className="App">
