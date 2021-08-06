@@ -42,8 +42,6 @@ func main() {
 		panic(token.Error())
 	}
 
-	client.Publish("topic/secret", 0, false, "NOIX IMRÃO")
-
 	watcher, err := fsnotify.NewWatcher()
 
 	if err != nil {
@@ -61,12 +59,11 @@ func main() {
 				if !ok {
 					return
 				}
-				log.Println("event:", event)
-
-				fmt.Printf("OK")
-				// str := fmt.Sprint(event.Op)
-
-				log.Println("modified file:", event.Name)
+				// log.Println("modified file:", event.Op)
+				if event.Op == fsnotify.Create || event.Op == fsnotify.Rename || event.Op == fsnotify.Write {
+					log.Println("modified created:", event.Name)
+					client.Publish(topic, 1, true, event.Name)
+				}
 
 			case err, ok := <-watcher.Errors:
 				if !ok {
@@ -76,7 +73,7 @@ func main() {
 			}
 		}
 	}()
-
+	// client.Publish(topic, 0, false, "nasa")
 	err = watcher.Add(url)
 	if err != nil {
 		log.Fatal(err)
