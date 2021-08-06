@@ -3,16 +3,12 @@ import logo from "./logo.svg";
 import "./App.css";
 import mqtt from "mqtt";
 
-interface mod {
-  topic: string;
-  message: string;
-}
-
 function App() {
   const [modifications, setModifications] = React.useState([] as any[]);
   const [connectStatus, setConnectStatus] = React.useState("");
   const [client, setClient] = React.useState(null as any);
 
+  const msg: any[] = [];
   const mqttConnect = () => {
     setConnectStatus("Connecting");
     setClient(mqtt.connect(process.env.REACT_APP_URL_MQTT));
@@ -20,7 +16,7 @@ function App() {
 
   React.useEffect(() => {
     if (client) {
-      client.subscribe("topic/secret");
+      client.subscribe("topic/secret", { qos: 2 });
       client.on("connect", () => {
         setConnectStatus("Connected");
       });
@@ -31,10 +27,9 @@ function App() {
       client.on("reconnect", () => {
         setConnectStatus("Reconnecting");
       });
-      client.on("message", (topic: string, message: string) => {
-        debugger;
-        const payload = { topic, message: message.toString() };
-        setModifications([...modifications, payload]);
+      client.on("message", (topic: string, message: string, packet: any) => {
+        msg.push(message.toString());
+        setModifications(msg);
       });
     }
   }, [client]);
@@ -47,11 +42,12 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+        {connectStatus}
         <p>{process.env.REACT_APP_URL_MQTT}</p>
         <p>{process.env.REACT_APP_TOPIC_URL}</p>
 
-        {modifications.map((md: mod) => (
-          <p>{md.message}</p>
+        {modifications.map((mod: string) => (
+          <p>{mod}</p>
         ))}
       </header>
     </div>
