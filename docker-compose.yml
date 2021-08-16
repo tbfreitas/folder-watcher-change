@@ -8,7 +8,13 @@ services:
       - 8883:8883
     volumes:
       - ./config:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-logs:/mosquitto/logs
     restart: unless-stopped
 
 volumes:
+  store:
   config:
+  mosquitto-data:
+  mosquitto-logs:
+  mosquitto-conf:

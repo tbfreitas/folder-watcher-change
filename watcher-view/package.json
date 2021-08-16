@@ -1,0 +1,19 @@
+{
+  "name": "watcher-view",
+  "version": "1.0.0",
+  "description": "Viewer of the changes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server"
+  },
+  "devDependencies": {
+    "http-server": "latest"
+  },
+  "author": "Tarcísio",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^3.6.0",
+    "mqtt": "^4.2.8"
+  }
+}
