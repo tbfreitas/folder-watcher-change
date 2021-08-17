@@ -1,18 +1,25 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/fsnotify/fsnotify"
 )
 
 const (
-	url           = "/Users/tarcisio/Desktop/teste.txt" // mapear volume pra arquivo local pra teste
+	url           = "../file-watched" // mapear volume pra arquivo local pra teste
 	topic         = "topic/secret"
 	addressBroker = "tcp://localhost:1883"
 )
+
+type value struct {
+	File   string `json:"file"`
+	Action string `json:"action"`
+}
 
 var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	fmt.Printf("Message %s received on topic %s\n", msg.Payload(), msg.Topic())
@@ -59,10 +66,17 @@ func main() {
 				if !ok {
 					return
 				}
-				// log.Println("modified file:", event.Op)
+\
 				if event.Op == fsnotify.Create || event.Op == fsnotify.Rename || event.Op == fsnotify.Write {
-					log.Println("modified created:", event.Name)
-					client.Publish(topic, 1, true, event.Name)
+					log.Println("modified created:", event.Op)
+					message := value{File: event.Name, Action: event.Op.String()}
+					messageJSON, err := json.Marshal(message)
+					if err != nil {
+						fmt.Println(err)
+						os.Exit(1)
+					}
+					fmt.Println(messageJSON)
+					client.Publish(topic, 1, true, messageJSON)
 				}
 
 			case err, ok := <-watcher.Errors:
