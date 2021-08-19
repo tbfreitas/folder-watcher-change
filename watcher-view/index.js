@@ -1,5 +1,6 @@
 const clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 
+let cont = 1;
 const host = "ws://localhost:8883";
 const options = {
   keepalive: 60,
@@ -36,12 +37,13 @@ client.on("connect", () => {
 
 client.on("message", (topic, message, packet) => {
   const msg = JSON.parse(message.toString());
-  debugger;
   const date = new Date();
   $("#main-container").append(
-    `<p>Message received at ${date.getHours()}:${date.getMinutes()}</p>`
+    `<h3><b>${cont}. Message received at ${date.getHours()}:${date.getMinutes()}</b></h3>`
   );
-  $("#main-container").append(`<p>Topic => ${topic}</p>`);
-  $("#main-container").append(`<p>Action => ${message.toString()}</p>`);
+  $("#main-container").append(`<p>   Topic => ${topic}</p>`);
+  $("#main-container").append(`<p>File => ${msg.file}</p>`);
+  $("#main-container").append(`<p>Action => ${msg.action}</p>`);
   $("#main-container").append(`</br>`);
+  cont++;
 });

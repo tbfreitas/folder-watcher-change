@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	url           = "../file-watched" // mapear volume pra arquivo local pra teste
+	url           = "/tmp/files"
 	topic         = "topic/secret"
-	addressBroker = "tcp://localhost:1883"
+	addressBroker = "tcp://mosquitto:1883"
 )
 
 type value struct {
@@ -58,7 +58,6 @@ func main() {
 	defer watcher.Close()
 	done := make(chan bool)
 
-	// anonymous function
 	go func() {
 		for {
 			select {
@@ -66,7 +65,7 @@ func main() {
 				if !ok {
 					return
 				}
-\
+
 				if event.Op == fsnotify.Create || event.Op == fsnotify.Rename || event.Op == fsnotify.Write {
 					log.Println("modified created:", event.Op)
 					message := value{File: event.Name, Action: event.Op.String()}
@@ -87,7 +86,7 @@ func main() {
 			}
 		}
 	}()
-	// client.Publish(topic, 0, false, "nasa")
+
 	err = watcher.Add(url)
 	if err != nil {
 		log.Fatal(err)
