@@ -24,6 +24,15 @@ services:
     volumes:
       - "./file-watched:/tmp/files"
 
+  watcher-view:
+    image: "tarcisiodf23/watcher-view:0.0.1"
+    container_name: "watch-view"
+    restart: unless-stopped
+    networks:
+      - watcher
+    ports:
+      - "8000:80"
+
 networks:
   watcher:
 

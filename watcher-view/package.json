@@ -8,7 +8,6 @@
     "start": "http-server"
   },
   "devDependencies": {
-    "dotenv-webpack": "^7.0.3",
     "http-server": "latest"
   },
   "author": "Tarcísio",
