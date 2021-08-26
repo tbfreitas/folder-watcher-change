@@ -20,4 +20,4 @@ So, you gonna download 3 docker images. When it's done, a ngnix will be exposing
 
 ### Disclaimer
 
-The main goal of the project is to test the architeture. So, optimize the build images was **not** a concern in here. We could make better _Dockerfile_, using a image to build and a lightweight with a only one purpose, run de binary. Same thing for the frontend structure, which is pure HTML injecting a javascript file(MQTT lib and JQuery Lib).
+The main goal of the project is to test the architeture. So, optimize the build images was **not** a concern in here. We could increase _Dockerfile_, using a image to build and a lightweight to run the binary. Same thing for the frontend structure, which is pure HTML injecting a javascript file(MQTT lib and JQuery Lib).
