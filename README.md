@@ -1,9 +1,6 @@
 # folder-watcher-change
 
-_FWC_ is a case study architeture that works as a datawarehouse. What it means ? There's a observable actor listening any file change, or even a whole folder, just like in sample. When it`s occurs, a payload is send throught a MQTT broker.
-On the edge of the bus, we got a Javascript listening the actions, and manipulating the DOM using **Jquery** to show the changes.
-<br/>
-The Broker is a broadcaster software, thus making easy connect from a generic way any new application. Just connect using the right protocol - tcp/wss- and port -8883:1883-. Rather than create or modify the architeture on each new entry, just make the appointment to this address.
+Rewriting after Denucci just over my wrote english.
 
 ### Architeture
 
