@@ -12,9 +12,9 @@ As simple as it can, just do on console:
 
     docker-compose up
 
-So, 3 docker images will be received. When it's done, a ngnix will be exposing by port 80. Docker will make a fast forward from port 8000 to 80. Thus, open your browser on address:
+So, 3 docker images will be received. When it's done, a ngnix will be exposing by port 80. Docker will make a fast forward from port 8000 to 80. Thus, open your browser on address `localhost:8000`, as shown below:
 
-    localhost:8000
+![](./imgs/example.gif)
 
 ### Disclaimer
 
